@@ -1,0 +1,64 @@
+{
+  "bot": {
+    "name": "Nextus Sounds",
+    "version": "1.0.0",
+    "prefix": "!",
+    "owner_id": 1209693276635009095,
+    "description": "High-Quality Discord Music Bot with Soundboard, Filters, and Multi-Platform Support",
+    "status": [
+      "Music | !help",
+      "!play <song>",
+      "Multi-platform",
+      "24/7 Mode"
+    ]
+  },
+  "audio": {
+    "default_volume": 75,
+    "max_volume": 150,
+    "bitrate": 384,
+    "high_quality": true,
+    "sources": ["youtube", "spotify", "soundcloud", "twitch", "bandcamp", "direct"]
+  },
+  "lavalink": {
+    "host": "lavalink.jockie.dev",
+    "port": 443,
+    "password": "password",
+    "secure": true
+  },
+  "playlist": {
+    "max_queue": 100,
+    "max_duration_seconds": 10800,
+    "duplicate_check": true
+  },
+  "filters": [
+    "none",
+    "bassboost",
+    "nightcore",
+    "vaporwave",
+    "8d",
+    "karaoke",
+    "pop",
+    "soft",
+    "treblebass",
+    "electronic"
+  ],
+  "welcome": {
+    "enabled": true,
+    "sound_file": "welcome.mp3",
+    "auto_play_on_join": true
+  },
+  "moderation": {
+    "dj_role_enabled": true,
+    "vote_skip_enabled": true,
+    "vote_skip_threshold": 0.5,
+    "auto_leave_when_alone": true,
+    "auto_leave_timeout": 300
+  },
+  "embeds": {
+    "color_primary": "0x2F3136",
+    "color_success": "0x43B581",
+    "color_error": "0xF04747",
+    "color_warning": "0xFAA61A",
+    "footer_text": "Nextus Sounds v1.0 | Made with love"
+  }
+}

@@ -1,0 +1,36 @@
+# Environment — DO NOT COMMIT SECRETS
+.env
+*.env
+.env.*
+!.env.example
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Logs
+bot.log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Soundboard (user content)
+sounds/*.mp3
+sounds/*.wav
+sounds/*.ogg
+!sounds/README.md

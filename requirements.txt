@@ -1,0 +1,18 @@
+# Core
+discord.py[voice]>=2.3.0
+wavelink>=3.0.0
+python-dotenv>=1.0.0
+
+# Audio processing
+yt-dlp>=2023.0.0
+
+# Utilities
+psutil>=5.9.0
+aiohttp>=3.9.0
+
+# Optional (configure keys in .env to enable)
+lyricsgenius>=3.0.0    # Lyrics feature (Genius API)
+spotipy>=2.23.0        # Spotify API (advanced metadata)
+
+# Web server (for /invite OAuth)
+PyNaCl>=1.5.0

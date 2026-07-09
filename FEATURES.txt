@@ -1,0 +1,293 @@
+═══════════════════════════════════════════════════════════════════════════════
+🎵 NEXTUS SOUNDS v1.0 — COMPLETE FEATURE LIST
+═══════════════════════════════════════════════════════════════════════════════
+
+සියලුම commands prefix: !  (or ns. / n. / @Nextus)
+ඔයාට check කරන්න පුළුවන් — point එකක් එකක් try කරන්න!
+
+═══════════════════════════════════════════════════════════════════════════════
+🎵 SECTION 1: MUSIC COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+[1]  !play <song/URL>
+     → Song play කරන්න / queue එකට add කරන්න
+     → Examples: !play despacito | !play https://youtu.be/...
+
+[2]  !pause
+     → Song pause කරන්න
+
+[3]  !resume
+     → Pause කරපු song resume කරන්න
+
+[4]  !skip
+     → Current song skip කරන්න
+
+[5]  !stop
+     → Stop + queue clear + VC disconnect
+
+[6]  !queue [page]
+     → Queue list බලන්න
+
+[7]  !nowplaying  (alias: !np)
+     → Currently playing song embed
+
+[8]  !volume <0-150>
+     → Volume change කරන්න (max 150%)
+     → Example: !volume 80
+
+[9]  !loop <off|track|queue>
+     → Loop mode change කරන්න
+     → track: same song repeat | queue: whole queue repeat
+
+[10] !shuffle
+     → Queue random shuffle
+
+[11] !seek <seconds>
+     → Song එකේ specific position එකට jump කරන්න
+     → Example: !seek 60
+
+[12] !remove <position>
+     → Queue එකෙන් specific song remove කරන්න
+
+[13] !clearqueue
+     → Queue මුළුමනින්ම clear කරන්න
+
+[14] !dedupe
+     → Queue එකෙන් duplicate songs remove කරන්න
+
+[15] !vote-skip  (alias: !voteskip, !vs)
+     → Vote skip cast කරන්න (50% listeners ඕනේ)
+
+═══════════════════════════════════════════════════════════════════════════════
+🎺 SECTION 2: SOUNDBOARD COMMANDS
+═══════════════════════════════════════════════════════════════════════════════
+
+[16] !sb <name>
+     → Sound effect play කරන්න
+     → Example: !sb bruh | !sb welcome
+
+[17] !sounds
+     → ඔක්කොම available sounds list බලන්න
+
+[18] !sb stop
+     → Soundboard stop කරන්න
+
+[19] !sb add <name>  (Admin only)
+     → අලුත් sound upload කරන්න (attachment එක්ක)
+
+[20] !sb remove <name>  (Admin only)
+     → Sound delete කරන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+🎚️ SECTION 3: AUDIO FILTERS
+═══════════════════════════════════════════════════════════════════════════════
+
+[21] !filter <name>
+     → Audio filter apply කරන්න
+     → Examples:
+        !filter bassboost    (බේස් වැඩි කරන්න)
+        !filter nightcore    (speed + pitch up)
+        !filter vaporwave    (slowed + pitched down)
+        !filter 8d           (rotating audio - headphones recommended)
+        !filter karaoke      (vocals remove)
+        !filter pop          (pop EQ preset)
+        !filter rock         (rock EQ preset)
+        !filter electronic   (electronic EQ preset)
+        !filter soft         (soft EQ preset)
+        !filter treblebass   (treble + bass boost)
+        !filter tremolo      (volume oscillation)
+        !filter vibrato      (pitch oscillation)
+
+[22] !filter off / !filter reset
+     → Filter remove කරන්න
+
+[23] !filters  (alias: !fxs)
+     → ඔක්කොම filters list බලන්න
+
+[24] !speed <0.25-3.0>
+     → Playback speed change කරන්න
+     → Example: !speed 1.5
+
+[25] !pitch <0.25-3.0>
+     → Pitch change කරන්න
+     → Example: !pitch 0.8
+
+═══════════════════════════════════════════════════════════════════════════════
+⭐ SECTION 4: FAVORITES
+═══════════════════════════════════════════════════════════════════════════════
+
+[26] !fav
+     → ඔයාගේ favorites list බලන්න
+
+[27] !fav list
+     → Favorites list (full)
+
+[28] !fav add
+     → Currently playing song favorite එකට add කරන්න
+
+[29] !fav play <#>
+     → Saved favorite song play කරන්න
+     → Example: !fav play 3
+
+[30] !fav remove <uri or #>
+     → Favorite remove කරන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+📜 SECTION 5: PLAYLISTS
+═══════════════════════════════════════════════════════════════════════════════
+
+[31] !playlist  (alias: !pl)
+     → ඔයාගේ playlists list බලන්න
+
+[32] !playlist list
+     → ඔයාගේ playlists list
+
+[33] !playlist make <name>  (alias: !playlist save, !playlist create)
+     → Currently playing + queue playlist එකක් විදියට save කරන්න
+     → Example: !playlist make chill-mix
+
+[34] !playlist load <name>
+     → Saved playlist load + play කරන්න
+     → Example: !playlist load chill-mix
+
+[35] !playlist delete <name>
+     → Playlist delete කරන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+📈 SECTION 6: STATS & HISTORY
+═══════════════════════════════════════════════════════════════════════════════
+
+[36] !top
+     → Server එකේ top 10 songs බලන්න
+
+[37] !topuser  (alias: !toplisteners)
+     → Server එකේ top 10 listeners බලන්න
+
+[38] !history
+     → Last 15 played songs බලන්න (server-specific)
+
+[39] !stats  (alias: !info, !about)
+     → Bot stats (RAM, CPU, servers, users)
+
+═══════════════════════════════════════════════════════════════════════════════
+🛠️ SECTION 7: UTILITIES
+═══════════════════════════════════════════════════════════════════════════════
+
+[40] !help  (alias: !h, !උදව්, !halp)
+     → සියලුම commands list බලන්න
+
+[41] !ping
+     → Bot latency check කරන්න
+
+[42] !lyrics <song>
+     → Song එකේ lyrics fetch කරන්න (Genius API)
+     → Example: !lyrics bohemian rhapsody
+
+[43] !search <query>
+     → YouTube search + top 5 results
+     → Example: !search lofi music
+
+[44] !24/7  (alias: !247, !stay)
+     → 24/7 mode toggle (bot VC එකේ නැවත stop වෙන්නේ නෑ)
+
+[45] !invite
+     → Bot invite link ගන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+🛡️ SECTION 8: MODERATION & DJ ROLE
+═══════════════════════════════════════════════════════════════════════════════
+
+[46] !djrole @role  (Admin only)
+     → DJ role set කරන්න (මේ role එක ඇති users විතරයි music commands use කරන්න පුළුවන්)
+
+[47] !djinfo
+     → Current DJ role බලන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+🌍 SECTION 9: LANGUAGE
+═══════════════════════════════════════════════════════════════════════════════
+
+[48] !language si  (alias: !lang si)
+     → Sinhala language set කරන්න (default)
+
+[49] !language en
+     → English language set කරන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+👋 SECTION 10: WELCOME SOUND
+═══════════════════════════════════════════════════════════════════════════════
+
+[50] 👋 AUTOMATIC
+     → Bot voice channel එකකට join වෙද්දී sounds/welcome.mp3 auto-play
+
+[51] !welcome  (alias: !welc)  (Manage Server permission)
+     → Manual welcome sound play කරන්න
+
+[52] !welcometoggle  (Admin only)
+     → Welcome sound globally on/off කරන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+🎛️ SECTION 11: NOW PLAYING BUTTONS (Auto - no command needed)
+═══════════════════════════════════════════════════════════════════════════════
+
+🎵 Bot song play කරද්දී Now Playing embed එකේ මේ buttons auto-appear වෙනවා:
+
+[53] ⏯ Pause/Resume button
+
+[54] ⏭ Skip button
+
+[55] ⏹ Stop button
+
+[56] 🔀 Shuffle button
+
+[57] 🔁 Loop button
+
+[58] 📃 Queue button (click කරාම ephemeral ව message එකක් එනවා)
+
+═══════════════════════════════════════════════════════════════════════════════
+💬 SECTION 12: SLASH COMMANDS (Discord / commands)
+═══════════════════════════════════════════════════════════════════════════════
+
+[59] /play <query>
+     → Slash command වලින් play කරන්න
+
+[60] /skip
+     → Slash command වලින් skip කරන්න
+
+[61] /pause
+     → Slash command වලින් pause/resume කරන්න
+
+[62] /queue
+     → Slash command වලින් queue බලන්න
+
+[63] /filter <name>
+     → Slash command වලින් filter apply කරන්න
+
+[64] /volume <percent>
+     → Slash command වලින් volume change කරන්න
+
+[65] /join
+     → Slash command වලින් voice channel එකට join වෙන්න
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+TOTAL COMMANDS:        65
+TOTAL SECTIONS:        12
+MUSIC COMMANDS:        15
+SOUNDBOARD COMMANDS:    5
+FILTER COMMANDS:        5
+FAVORITES COMMANDS:     5
+PLAYLIST COMMANDS:      5
+STATS COMMANDS:         4
+UTILITIES COMMANDS:     6
+MODERATION COMMANDS:    2
+LANGUAGE COMMANDS:      2
+WELCOME COMMANDS:       3
+SLASH COMMANDS:         7
+NOW PLAYING BUTTONS:    6
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ READY TO USE — ඔයාට check කරන්න commands point එකක් එකක් try කරන්න!
+═══════════════════════════════════════════════════════════════════════════════
