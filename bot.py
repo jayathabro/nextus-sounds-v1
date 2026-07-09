@@ -106,12 +106,16 @@ class NextusSounds(commands.Bot):
 
     async def connect_lavalink(self) -> None:
         try:
+            # 🔧 FIX: secure= → https= (wavelink v3 uses 'https' not 'secure')
+            secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
+            protocol = "https" if secure else "http"
+            host = os.getenv("LAVALINK_HOST", "lavalink.jockie.dev")
+            port = os.getenv("LAVALINK_PORT", "443")
+
             node = wavelink.Node(
-                uri=f"{(os.getenv('LAVALINK_SECURE', 'true').lower() == 'true' and 'https' or 'http')}://"
-                    f"{os.getenv('LAVALINK_HOST', 'lavalink.jockie.dev')}:"
-                    f"{os.getenv('LAVALINK_PORT', '443')}",
+                uri=f"{protocol}://{host}:{port}",
                 password=os.getenv("LAVALINK_PASSWORD", "password"),
-                secure=os.getenv("LAVALINK_SECURE", "true").lower() == "true",
+                https=secure,  # ← FIXED: was 'secure='
                 identifier="MAIN",
             )
             await wavelink.Pool.connect(client=self, nodes=[node])
