@@ -111,27 +111,33 @@ class NextusSounds(commands.Bot):
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
         password = os.getenv("LAVALINK_PASSWORD", "password")
 
-        # 🔧 FIX: Nodes with proper config
+        # 🔧 FIX: Nodes with proper config - updated with working public nodes
         nodes_to_try = [
             {
                 "uri": f"{'https' if secure else 'http'}://{host}:{port}",
                 "password": password,
                 "identifier": "MAIN",
             },
+            # Working public Lavalink nodes as fallback
             {
-                "uri": "http://lavalink.jockie.dev:2333",
-                "password": "youshallnotpass",
-                "identifier": "JOCKIE_HTTP",
+                "uri": "https://lava.moew.io:443",
+                "password": "moew",
+                "identifier": "MOEW",
             },
             {
-                "uri": "https://lavalink.darrenofficial.com:443",
-                "password": "darrenoff",
-                "identifier": "DARREN",
+                "uri": "https://lava.link:443",
+                "password": "lava",
+                "identifier": "LAVA_LINK",
             },
             {
-                "uri": "http://lavalink.oops.wtf:2333",
-                "password": "oops",
-                "identifier": "OOPS",
+                "uri": "https://node.clanx.cc:443",
+                "password": "clanx",
+                "identifier": "CLANX",
+            },
+            {
+                "uri": "https://lavalink.reece.app:443",
+                "password": "reece",
+                "identifier": "RCEE",
             },
         ]
 
