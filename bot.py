@@ -106,30 +106,24 @@ class NextusSounds(commands.Bot):
 
     async def connect_lavalink(self) -> None:
         """Connect to Lavalink with fallback to multiple public nodes."""
-        host = os.getenv("LAVALINK_HOST", "lavalink.jockie.dev")
+        # Use a working public node as primary instead of jockie.dev (which is dead)
+        host = os.getenv("LAVALINK_HOST", "lavalink.dependabot.com")
         port = os.getenv("LAVALINK_PORT", "443")
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
-        password = os.getenv("LAVALINK_PASSWORD", "password")
+        password = os.getenv("LAVALINK_PASSWORD", "youshallnotpass")
 
-        # 🔧 WORKING: Updated with reliable public nodes (tested 2026-07-10)
-        # Order matters: fastest/reliable nodes tried first
+        # WORKING: Reliable public nodes (ordered by reliability)
         nodes_to_try = [
-            # Primary: Your configured node
             {
                 "uri": f"{'https' if secure else 'http'}://{host}:{port}",
                 "password": password,
                 "identifier": "MAIN",
             },
-            # Reliable public nodes (in order of preference)
+            # Top reliable public nodes
             {
                 "uri": "https://lava.rest:443",
                 "password": "lava",
                 "identifier": "LAVA_REST",
-            },
-            {
-                "uri": "https://lavalink.dependabot.com:443",
-                "password": "youshallnotpass",
-                "identifier": "DEPENDABOT",
             },
             {
                 "uri": "https://api.lavalink.link:443",
@@ -146,27 +140,35 @@ class NextusSounds(commands.Bot):
                 "password": "neko",
                 "identifier": "NEKO",
             },
+            {
+                "uri": "https://lavalink.oryzen.xyz:443",
+                "password": "oryzen",
+                "identifier": "ORYZEN",
+            },
         ]
 
+        self.lavalink_connected = False
         for node_cfg in nodes_to_try:
             try:
                 log.info(f"🔄 Trying Lavalink node: {node_cfg['identifier']} ({node_cfg['uri']})")
-                # 🔧 FIX: Timeout — if node doesn't connect in 5s, move to next
                 node = wavelink.Node(**node_cfg)
                 await asyncio.wait_for(
                     wavelink.Pool.connect(client=self, nodes=[node]),
-                    timeout=5.0
+                    timeout=8.0
                 )
+                self.lavalink_connected = True
                 log.info(f"✅ Lavalink connection established: {node_cfg['identifier']}")
                 return
             except asyncio.TimeoutError:
                 log.warning(f"⏰ Timeout connecting to {node_cfg['identifier']}")
             except Exception as e:
                 log.warning(f"⚠️ Failed to connect {node_cfg['identifier']}: {e}")
-            # Continue to next node
             continue
 
-        log.error("❌ All Lavalink nodes failed. Bot will use fallback FFmpeg mode.")
+        # ⚠️ CRITICAL: If no node connects, DON'T start the bot
+        log.critical("❌ All Lavalink nodes failed. Cannot start music bot without audio.")
+        self.lavalink_connected = False
+        raise RuntimeError("No working Lavalink node available - check network/firewall or add custom node")
 
     @tasks.loop(minutes=5)
     async def change_status(self) -> None:
@@ -212,6 +214,13 @@ async def main() -> None:
         log.warning("⚠️ OWNER_ID not set — owner-only commands disabled")
 
     async with bot:
+        try:
+            # Connect cogs and Lavalink - will raise if no nodes work
+            await bot.setup_hook()
+        except RuntimeError as e:
+            log.critical(f"❌ Cannot start bot: {e}")
+            log.critical("💡 Set up a working Lavalink node in .env or use a self-hosted Lavalink server.")
+            return
         await bot.start(token)
 
 

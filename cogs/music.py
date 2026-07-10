@@ -150,6 +150,12 @@ class Music(commands.Cog, name="Music"):
         return []
 
     async def ensure_voice(self, ctx: commands.Context) -> Optional[wavelink.Player]:
+        # 🔧 Check if Lavalink pool has connected nodes
+        pool = wavelink.Pool
+        if not pool or not hasattr(pool, 'nodes') or not list(pool.nodes):
+            await ctx.send("❌ Voice එකට connect වෙන්න බෑ: No nodes are currently assigned to the wavelink.Pool in a CONNECTED state.\n💡 Check bot logs - Lavalink may be unreachable!")
+            return None
+
         if not ctx.author.voice or not ctx.author.voice.channel:
             await ctx.send("❌ Voice channel එකක join වෙන්න ඕනේ!")
             return None
