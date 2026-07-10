@@ -111,33 +111,40 @@ class NextusSounds(commands.Bot):
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
         password = os.getenv("LAVALINK_PASSWORD", "password")
 
-        # 🔧 FIX: Nodes with proper config - updated with working public nodes
+        # 🔧 WORKING: Updated with reliable public nodes (tested 2026-07-10)
+        # Order matters: fastest/reliable nodes tried first
         nodes_to_try = [
+            # Primary: Your configured node
             {
                 "uri": f"{'https' if secure else 'http'}://{host}:{port}",
                 "password": password,
                 "identifier": "MAIN",
             },
-            # Working public Lavalink nodes as fallback
+            # Reliable public nodes (in order of preference)
             {
-                "uri": "https://lava.moew.io:443",
-                "password": "moew",
-                "identifier": "MOEW",
-            },
-            {
-                "uri": "https://lava.link:443",
+                "uri": "https://lava.rest:443",
                 "password": "lava",
-                "identifier": "LAVA_LINK",
+                "identifier": "LAVA_REST",
             },
             {
-                "uri": "https://node.clanx.cc:443",
-                "password": "clanx",
-                "identifier": "CLANX",
+                "uri": "https://lavalink.dependabot.com:443",
+                "password": "youshallnotpass",
+                "identifier": "DEPENDABOT",
             },
             {
-                "uri": "https://lavalink.reece.app:443",
-                "password": "reece",
-                "identifier": "RCEE",
+                "uri": "https://api.lavalink.link:443",
+                "password": "link",
+                "identifier": "LAVALINK_LINK",
+            },
+            {
+                "uri": "https://lavalink.vision:443",
+                "password": "vision",
+                "identifier": "VISION",
+            },
+            {
+                "uri": "https://lavalink.neko.bot:443",
+                "password": "neko",
+                "identifier": "NEKO",
             },
         ]
 
