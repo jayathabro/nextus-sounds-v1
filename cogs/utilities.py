@@ -139,7 +139,14 @@ class Utilities(commands.Cog, name="Utilities"):
     async def search(self, ctx: commands.Context, *, query: str) -> None:
         """Search YouTube and show top 5 results."""
         try:
-            tracks = await wavelink.Playable.search(f"ytsearch5:{query}")
+            # wavelink v3: Use YouTubeTrack.search instead of Playable.search
+            from wavelink import YouTubeTrack
+            tracks = await YouTubeTrack.search(f"ytsearch5:{query}")
+            # v3 Search result has .tracks attribute
+            if hasattr(tracks, "tracks"):
+                tracks = list(tracks.tracks)
+            else:
+                tracks = list(tracks)
             if not tracks:
                 await ctx.send("❌ ඒක හොයාගන්න බෑ!")
                 return

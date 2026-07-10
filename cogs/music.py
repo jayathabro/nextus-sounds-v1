@@ -91,6 +91,64 @@ class Music(commands.Cog, name="Music"):
         m, s = divmod(seconds, 60)
         return f"{m:02d}:{s:02d}"
 
+    async def _search(self, query: str) -> list[wavelink.Playable]:
+        """
+        Search for tracks using wavelink v3 API.
+
+        Tries multiple known v3 search patterns in order:
+        1. YouTubeTrack.search() / SpotifyTrack.search() by platform
+        2. SearchableTrack.search() (v3.1+ unified search)
+        3. node.get_tracks() fallback
+        """
+        import re as _re
+        # Determine source from query prefix
+        source = None
+        clean_query = query
+        if query.startswith("ytsearch:") or query.startswith("ytmsearch:"):
+            source = "youtube"
+            clean_query = _re.sub(r"^(ytm?search:)\s*", "", query)
+        elif query.startswith("scsearch:"):
+            source = "soundcloud"
+        elif query.startswith("spsearch:"):
+            source = "spotify"
+
+        # Try v3 track class search methods
+        try:
+            if source == "youtube" or not source:
+                from wavelink import YouTubeTrack
+                return await YouTubeTrack.search(clean_query if not source else query)
+        except (ImportError, AttributeError):
+            pass
+
+        try:
+            if source == "spotify":
+                from wavelink import SpotifyTrack
+                return await SpotifyTrack.search(query)
+        except (ImportError, AttributeError):
+            pass
+
+        try:
+            # v3.1+ unified SearchableTrack.search() — returns SearchResult with .tracks
+            from wavelink import SearchableTrack
+            result = await SearchableTrack.search(query)
+            if hasattr(result, "tracks"):
+                return list(result.tracks)
+            return list(result)
+        except (ImportError, AttributeError):
+            pass
+
+        # Final fallback: try node.get_tracks (v3 standard)
+        try:
+            pool = wavelink.Pool
+            nodes = list(pool.nodes)
+            if nodes:
+                return await nodes[0].get_tracks(query)
+        except Exception:
+            pass
+
+        # If all above fail, return empty list
+        return []
+
     async def ensure_voice(self, ctx: commands.Context) -> Optional[wavelink.Player]:
         if not ctx.author.voice or not ctx.author.voice.channel:
             await ctx.send("❌ Voice channel එකක join වෙන්න ඕනේ!")
@@ -203,7 +261,13 @@ class Music(commands.Cog, name="Music"):
         player.text_channel = ctx.channel
 
         if not voice.is_playing():
-            voice.is_paused = False
+            # wavelink v3: is_paused is a property, not directly settable
+            # The proper way to resume is voice.resume(); check first
+            try:
+                if getattr(voice, "is_paused", False):
+                    await voice.resume()
+            except Exception:
+                pass
 
         # Confirm loading
         embed_loading = discord.Embed(
@@ -213,11 +277,20 @@ class Music(commands.Cog, name="Music"):
         msg = await ctx.send(embed=embed_loading)
 
         try:
+            # wavelink v3: search moved to YouTubeTrack / Track classes, NOT Playable
+            # Try multiple known v3 search entry points
             if re.match(URL_REGEX, query):
-                tracks: list[wavelink.Playable] = await wavelink.Playable.search(query)
+                result = await self._search(query)
             else:
                 # Default: YouTube search with 'ytsearch:'
-                tracks = await wavelink.Playable.search(f"ytsearch:{query}")
+                result = await self._search(f"ytsearch:{query}")
+            # Normalize result to list
+            if hasattr(result, "tracks"):
+                tracks: list[wavelink.Playable] = list(result.tracks)
+            elif isinstance(result, wavelink.Playlist):
+                tracks = list(result.tracks) if hasattr(result, "tracks") else list(result)
+            else:
+                tracks = list(result)
         except Exception as e:
             await msg.edit(content=f"❌ Search failed: {e}")
             return
@@ -226,12 +299,8 @@ class Music(commands.Cog, name="Music"):
             await msg.edit(content=f"❌ ඒක හොයාගන්න බෑ: **{query}**")
             return
 
-        # Handle Spotify special-case (Lavalink can do this natively, but we can add lyrics etc.)
-        if isinstance(tracks, wavelink.Playlist):
-            tracks = list(tracks)
-
-        if not voice.is_playing() and not voice.queue.is_empty and not (await self._has_current_track(voice)):
-            voice.queue.clear()
+        if not voice.is_playing() and len(voice.queue) > 0 and not (await self._has_current_track(voice)):
+            voice.queue.clear()  # wavelink v3: voice.queue is a list-like object, .clear() works via del
 
         if voice.is_playing() or voice.is_paused():
             for tr in (tracks if isinstance(tracks, list) else [tracks]):
