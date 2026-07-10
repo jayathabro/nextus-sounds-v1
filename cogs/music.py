@@ -28,7 +28,7 @@ from typing import Optional
 import discord
 import wavelink
 from discord.ext import commands
-from wavelink import QueueEmpty, QueueFull, TrackEndEvent, TrackStartEvent
+from wavelink import QueueEmpty, TrackEndEvent, TrackStartEvent
 
 from utils import storage, i18n
 

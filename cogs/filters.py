@@ -40,16 +40,16 @@ PRESETS = {
     "rock": [0.10, 0.10, 0.08, 0.05, 0.0, -0.05, -0.10, -0.05, 0.05, 0.10, 0.12, 0.12, 0.10, 0.08, 0.05],
 }
 
-# Lavalink FilterPayload presets
+# Lavalink FilterPayload presets (wavelink v3 uses Filters plural)
 SPECIAL_FILTERS = {
-    "nightcore": wavelink.Filter(timescale=wavelink.Timescale(speed=1.20, pitch=1.20, rate=1.0)),
-    "vaporwave": wavelink.Filter(timescale=wavelink.Timescale(speed=0.85, pitch=0.85, rate=1.0)),
-    "8d": wavelink.Filter(rotation=wavelink.Rotation(rotation_hz=0.30)),
-    "karaoke": wavelink.Filter(
+    "nightcore": wavelink.Filters(timescale=wavelink.Timescale(speed=1.20, pitch=1.20, rate=1.0)),
+    "vaporwave": wavelink.Filters(timescale=wavelink.Timescale(speed=0.85, pitch=0.85, rate=1.0)),
+    "8d": wavelink.Filters(rotation=wavelink.Rotation(rotation_hz=0.30)),
+    "karaoke": wavelink.Filters(
         karaoke=wavelink.Karaoke(level=1.0, mono_level=1.0, filter_band=220.0, filter_width=110.0)
     ),
-    "tremolo": wavelink.Filter(tremolo=wavelink.Tremolo(frequency=4.0, depth=0.5)),
-    "vibrato": wavelink.Filter(vibrato=wavelink.Vibrato(frequency=4.0, depth=0.5, frequency_in_hz=False)),
+    "tremolo": wavelink.Filters(tremolo=wavelink.Tremolo(frequency=4.0, depth=0.5)),
+    "vibrato": wavelink.Filters(vibrato=wavelink.Vibrato(frequency=4.0, depth=0.5, frequency_in_hz=False)),
 }
 
 
@@ -74,7 +74,7 @@ class Filters(commands.Cog, name="Filters"):
 
         try:
             if name == "off" or name == "none" or name == "reset":
-                await player.set_filter(wavelink.Filter())
+                await player.set_filter(wavelink.Filters())
                 self.current_filter[ctx.guild.id] = "none"
                 await ctx.message.add_reaction("🔄")
                 return
@@ -85,7 +85,7 @@ class Filters(commands.Cog, name="Filters"):
                 self.current_filter[ctx.guild.id] = name
             elif name in PRESETS:
                 eq = wavelink.Equalizer(bands=[(i, g) for i, g in enumerate(PRESETS[name])])
-                await player.set_filter(wavelink.Filter(equalizer=eq))
+                await player.set_filter(wavelink.Filters(equalizer=eq))
                 self.current_filter[ctx.guild.id] = name
             else:
                 await ctx.send(f"❌ Unknown filter. `!filters` බලන්න.")
@@ -133,7 +133,7 @@ class Filters(commands.Cog, name="Filters"):
             await ctx.send("❌ Speed range: 0.25 - 3.0")
             return
         player: wavelink.Player = ctx.voice_client
-        await player.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=value, pitch=1.0, rate=1.0)))
+        await player.set_filter(wavelink.Filters(timescale=wavelink.Timescale(speed=value, pitch=1.0, rate=1.0)))
         await ctx.send(f"⚡ Speed: **{value}x**")
 
     @commands.command(name="pitch")
@@ -146,7 +146,7 @@ class Filters(commands.Cog, name="Filters"):
             await ctx.send("❌ Pitch range: 0.25 - 3.0")
             return
         player: wavelink.Player = ctx.voice_client
-        await player.set_filter(wavelink.Filter(timescale=wavelink.Timescale(speed=1.0, pitch=value, rate=1.0)))
+        await player.set_filter(wavelink.Filters(timescale=wavelink.Timescale(speed=1.0, pitch=value, rate=1.0)))
         await ctx.send(f"🎤 Pitch: **{value}x**")
 
 

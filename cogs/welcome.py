@@ -105,7 +105,7 @@ class Welcome(commands.Cog, name="Welcome"):
         embed.set_footer(text=f"File: {sound_file.name}")
         await ctx.send(embed=embed)
 
-    @commands.command(name="welcometoggle", aliases=["welcometoggle"])
+    @commands.command(name="welcometoggle", aliases=["welctoggle", "togglewelcome"])
     @commands.has_permissions(administrator=True)
     async def toggle_welcome(self, ctx: commands.Context) -> None:
         """Toggle welcome sound globally (admin only)."""

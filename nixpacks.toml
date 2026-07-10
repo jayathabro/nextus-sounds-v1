@@ -1,0 +1,11 @@
+# Railway Nixpacks configuration
+# This tells Railway how to build the Nextus Sounds Discord bot
+
+[phases.setup]
+nixPkgs = ["python313", "ffmpeg"]
+
+[phases.install]
+cmds = ["pip install --upgrade pip", "pip install -r requirements.txt"]
+
+[start]
+cmd = "python bot.py"

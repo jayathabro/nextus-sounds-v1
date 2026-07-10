@@ -50,7 +50,19 @@ class NextusSounds(commands.Bot):
     """Custom Bot class with extra helpers."""
 
     def __init__(self) -> None:
-        intents = discord.Intents.all()
+        # IMPORTANT: For Railway deployment we use only non-privileged intents
+        # by default. If you want to enable privileged intents (members/presence/
+        # message_content), do it in:
+        #   Discord Developer Portal → Your App → Bot → Privileged Gateway Intents
+        #
+        # Then change `members_enabled = False` to `True` in `.env`.
+        intents = discord.Intents.default()
+        intents.message_content = True   # Required for prefix commands to read text
+        intents.guilds = True            # Always on for guild events
+        intents.voice_states = True      # Required for music player
+        # Members intent is privileged — only enabled if env flag set
+        if os.getenv("ENABLE_MEMBERS_INTENT", "false").lower() == "true":
+            intents.members = True
         super().__init__(
             command_prefix=self._get_prefix,
             intents=intents,
@@ -106,7 +118,7 @@ class NextusSounds(commands.Bot):
 
     async def connect_lavalink(self) -> None:
         try:
-            # 🔧 FIX: secure= → https= (wavelink v3 uses 'https' not 'secure')
+            # Protocol is embedded in the URI — wavelink v3 does NOT use 'https=' param
             secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
             protocol = "https" if secure else "http"
             host = os.getenv("LAVALINK_HOST", "lavalink.jockie.dev")
@@ -115,7 +127,6 @@ class NextusSounds(commands.Bot):
             node = wavelink.Node(
                 uri=f"{protocol}://{host}:{port}",
                 password=os.getenv("LAVALINK_PASSWORD", "password"),
-                https=secure,  # ← FIXED: was 'secure='
                 identifier="MAIN",
             )
             await wavelink.Pool.connect(client=self, nodes=[node])
