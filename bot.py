@@ -77,8 +77,10 @@ class NextusSounds(commands.Bot):
 
     # ------------------------------------------------------------------
     async def _get_prefix(self, bot: "NextusSounds", message: discord.Message) -> list[str]:
-        prefixes = ["!", "ns.", "n.", "<@", "@Nextus"]
-        return commands.when_mentioned(*prefixes)(bot, message)
+        """Return a combined list of mention-prefixes and text-prefixes."""
+        mention_prefixes = await commands.when_mentioned(bot, message)
+        text_prefixes = ["!", "ns.", "n."]
+        return mention_prefixes + text_prefixes
 
     # ------------------------------------------------------------------
     async def setup_hook(self) -> None:
