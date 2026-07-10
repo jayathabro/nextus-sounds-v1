@@ -59,7 +59,7 @@ class NextusSounds(commands.Bot):
             intents.members = True
 
         super().__init__(
-            command_prefix=self._get_prefix,
+            command_prefix=commands.when_mentioned_or("!", "ns.", "n."),
             intents=intents,
             help_command=None,
             case_insensitive=True,
@@ -74,13 +74,6 @@ class NextusSounds(commands.Bot):
         }
         self.welcome_sound_enabled = os.getenv("ENABLE_WELCOME_SOUND", "true").lower() == "true"
         self.start_time = discord.utils.utcnow()
-
-    # ------------------------------------------------------------------
-    async def _get_prefix(self, bot: "NextusSounds", message: discord.Message) -> list[str]:
-        """Return a combined list of mention-prefixes and text-prefixes."""
-        mention_prefixes = await commands.when_mentioned(bot, message)
-        text_prefixes = ["!", "ns.", "n."]
-        return mention_prefixes + text_prefixes
 
     # ------------------------------------------------------------------
     async def setup_hook(self) -> None:
