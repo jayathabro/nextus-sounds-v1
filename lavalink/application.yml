@@ -1,0 +1,78 @@
+# Lavalink Configuration for Nextus Sounds
+# https://github.com/lavalink-devs/Lavalink
+
+server:
+  # Port (Railway sets PORT env var automatically; Lavalink reads from env)
+  port: ${PORT:2333}
+  address: 0.0.0.0
+
+spring:
+  main:
+    banner-mode: log
+
+  tomcat:
+    max-http-form-post-size: 100MB
+
+lavalink:
+  server:
+    password: "${LAVALINK_PASSWORD:youshallnotpass}"
+    sources:
+      youtube:
+        enabled: true
+        # Plaintext HTTP works without googleapis — Railway friendly
+        http: true
+        allowSearch: true
+        allowDirectVideoIds: true
+        allowDirectPlaylistIds: true
+      spotify:
+        enabled: true
+        # Use Spotify public free client (no API key needed)
+        spDc: "${SPOTIFY_SP_DC:}"
+        # If SP_DC not set, Spotify won't work but YouTube still does
+      soundcloud:
+        enabled: true
+      bandcamp:
+        enabled: true
+      twitch:
+        enabled: true
+      vimeo:
+        enabled: true
+      applemusic:
+        enabled: false
+      deezer:
+        enabled: false
+      yandexmusic:
+        enabled: false
+      http:
+        enabled: true
+
+    plugins: []
+
+  metrics:
+    prometheus:
+      enabled: false
+
+  youtubeConfig:
+    PAPISID: "${YOUTUBE_PAPISID:}"
+    PSID: "${YOUTUBE_PSID:}"
+
+  ratelimit:
+    ipDecrement: 30
+    adminBypass: true
+
+logging:
+  level:
+    root: INFO
+    lavalink: INFO
+
+  file:
+    max-history: 7
+    max-size: 100MB
+
+  request:
+    enabled: false
+
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 7
