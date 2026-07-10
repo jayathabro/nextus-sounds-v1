@@ -26,15 +26,76 @@ class Slash(commands.Cog, name="Slash"):
     @app_commands.command(name="play", description="Play a song or add it to the queue")
     @app_commands.describe(query="Song name, YouTube URL, or Spotify link")
     async def slash_play(self, interaction: discord.Interaction, query: str) -> None:
+        # Check if Lavalink is connected first
+        try:
+            pool = wavelink.Pool
+            nodes = list(pool.nodes) if hasattr(pool, 'nodes') else []
+            if not nodes:
+                return await interaction.response.send_message(
+                    "❌ Lavalink node කිහယ်သည် connect වීမထားပါဘူး. Bot admin ကို အကြံပြုပြင်ဆင်ချက်ကိုစစ်ဆေးပါ.",
+                    ephemeral=True
+                )
+        except Exception:
+            pass
+
         if not interaction.user.voice or not interaction.user.voice.channel:
             return await interaction.response.send_message("❌ Voice channel එකක join වෙන්න ඕනේ", ephemeral=True)
-        await interaction.response.defer()
+        await interaction.response.defer(thinking=True)
+
         music = self.bot.get_cog("Music")
         if not music:
-            return await interaction.followup.send("❌ Music cog missing")
-        # Use ctx with channel scope
-        ctx = await self.bot.get_context(interaction)
-        await music.play.callback(music, ctx, query=query)
+            return await interaction.followup.send("❌ Music cog missing", ephemeral=True)
+
+        # Get voice channel and connect
+        channel = interaction.user.voice.channel
+        vc = interaction.guild.voice_client
+
+        # Connect to voice if not connected
+        if vc is None:
+            try:
+                vc = await channel.connect(cls=wavelink.Player, self_deaf=True)
+            except Exception as e:
+                return await interaction.followup.send(f"❌ Voice එකට connect වෙන්න බෑ:\n{e}", ephemeral=True)
+
+        # Search for tracks
+        try:
+            from wavelink import YouTubeTrack
+            if "://" in query:
+                tracks = await YouTubeTrack.search(query)
+            else:
+                tracks = await YouTubeTrack.search(f"ytsearch:{query}")
+            if hasattr(tracks, "tracks"):
+                tracks = list(tracks.tracks)
+            else:
+                tracks = list(tracks) if tracks else []
+        except Exception as e:
+            return await interaction.followup.send(f"❌ Search බැင်දတ်ချက်:\n{e}", ephemeral=True)
+
+        if not tracks:
+            return await interaction.followup.send(f"❌ ඒක හොයාගන්න බෑ: **{query}**", ephemeral=True)
+
+        # Play or queue the first track
+        player = music.get_player(interaction.guild.id)
+        player.text_channel = interaction.channel
+
+        if vc.is_playing() or vc.is_paused():
+            player.queue.append(tracks[0])
+            embed = discord.Embed(
+                title="➕ Added to Queue",
+                description=f"**{tracks[0].title}**",
+                color=0x1DB954,
+            )
+            embed.add_field(name="Pos", value=f"#{len(player.queue)}")
+            await interaction.followup.send(embed=embed)
+        else:
+            await vc.play(tracks[0])
+            player.last_track = tracks[0]
+            embed = discord.Embed(
+                title="🎵 Now Playing",
+                description=f"**{tracks[0].title}**",
+                color=0x1DB954,
+            )
+            await interaction.followup.send(embed=embed)
 
     @app_commands.command(name="skip", description="Skip current song")
     async def slash_skip(self, interaction: discord.Interaction) -> None:
@@ -77,10 +138,18 @@ class Slash(commands.Cog, name="Slash"):
     @app_commands.command(name="filter", description="Apply an audio filter")
     @app_commands.describe(name="Filter name (bassboost, nightcore, 8d, etc.)")
     async def slash_filter(self, interaction: discord.Interaction, name: str) -> None:
+        # Check if Lavalink is connected first
+        if not hasattr(wavelink.Pool, 'nodes') or not list(wavelink.Pool.nodes):
+            return await interaction.response.send_message(
+                "❌ Lavalink node කිහယ်သည် connect වීမထားပါဘူး.",
+                ephemeral=True
+            )
         filters = self.bot.get_cog("Filters")
         if not filters:
             return await interaction.response.send_message("❌ Filters cog missing", ephemeral=True)
         ctx = await self.bot.get_context(interaction)
+        ctx.author = interaction.user
+        ctx.guild = interaction.guild
         await filters.filter_cmd.callback(filters, ctx, name=name)
 
     @app_commands.command(name="volume", description="Set playback volume (0-150)")

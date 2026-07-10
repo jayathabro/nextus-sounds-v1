@@ -214,13 +214,6 @@ async def main() -> None:
         log.warning("⚠️ OWNER_ID not set — owner-only commands disabled")
 
     async with bot:
-        try:
-            # Connect cogs and Lavalink - will raise if no nodes work
-            await bot.setup_hook()
-        except RuntimeError as e:
-            log.critical(f"❌ Cannot start bot: {e}")
-            log.critical("💡 Set up a working Lavalink node in .env or use a self-hosted Lavalink server.")
-            return
         await bot.start(token)
 
 
