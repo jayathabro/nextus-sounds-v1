@@ -18,6 +18,7 @@ Made with 💚 by Nextus Sounds
 """
 
 import asyncio
+import json
 import logging
 import os
 import platform
@@ -117,23 +118,46 @@ class NextusSounds(commands.Bot):
                 log.exception(f"Failed to load cog {cog}: {e}")
 
     async def connect_lavalink(self) -> None:
-        try:
-            # Protocol is embedded in the URI — wavelink v3 does NOT use 'https=' param
-            secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
-            protocol = "https" if secure else "http"
-            host = os.getenv("LAVALINK_HOST", "lavalink.jockie.dev")
-            port = os.getenv("LAVALINK_PORT", "443")
+        """Connect to Lavalink with fallback to multiple public nodes."""
+        # Try configured host first, then fall back to working public nodes
+        host = os.getenv("LAVALINK_HOST", "lavalink.jockie.dev")
+        port = os.getenv("LAVALINK_PORT", "443")
+        secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
+        password = os.getenv("LAVALINK_PASSWORD", "password")
 
-            node = wavelink.Node(
-                uri=f"{protocol}://{host}:{port}",
-                password=os.getenv("LAVALINK_PASSWORD", "password"),
-                identifier="MAIN",
-            )
-            await wavelink.Pool.connect(client=self, nodes=[node])
-            log.info("✅ Lavalink connection established!")
-        except Exception as e:
-            log.error(f"⚠️ Lavalink connection failed: {e}")
-            log.warning("Bot will use fallback FFmpeg mode (no filters/effects).")
+        # List of public Lavalink servers to try in order
+        nodes_to_try = [
+            {
+                "uri": f"{'https' if secure else 'http'}://{host}:{port}",
+                "password": password,
+                "identifier": "MAIN",
+            },
+            # Fallback 1: lavalink.jockie.dev (HTTP, no SSL — bypasses SSLv3 issue)
+            {
+                "uri": "http://lavalink.jockie.dev:2333",
+                "password": "youshallnotpass",
+                "identifier": "JOCKIE_HTTP",
+            },
+            # Fallback 2: a free public node
+            {
+                "uri": "https://lavalink.darrenofficial.com:443",
+                "password": "darrenoff",
+                "identifier": "DARREN",
+            },
+        ]
+
+        for node_cfg in nodes_to_try:
+            try:
+                node = wavelink.Node(**node_cfg)
+                await wavelink.Pool.connect(client=self, nodes=[node])
+                log.info(f"✅ Lavalink connection established: {node_cfg['identifier']}")
+                return
+            except Exception as e:
+                log.warning(f"⚠️  Failed to connect {node_cfg['identifier']}: {e}")
+                continue
+
+        log.error("❌ All Lavalink nodes failed. Bot will use fallback FFmpeg mode (no filters/effects).")
+        log.error("   Set LAVALINK_HOST and LAVALINK_PASSWORD in Railway env vars for a self-hosted node.")
 
     @tasks.loop(minutes=5)
     async def change_status(self) -> None:
@@ -162,11 +186,23 @@ async def main() -> None:
         log.critical("   3. Get token: https://discord.com/developers/applications → Bot → Reset Token")
         return
 
+    # Try env first, then fall back to config.json (so Railway works without env vars)
     owner_id = os.getenv("OWNER_ID")
-    if owner_id:
+    if not owner_id:
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+            owner_id = str(cfg.get("bot", {}).get("owner_id", ""))
+            if owner_id and owner_id not in ("YOUR_DISCORD_USER_ID_HERE", "0", ""):
+                os.environ["OWNER_ID"] = owner_id
+                log.info(f"👑 Bot owner ID (from config.json): {owner_id}")
+        except Exception as e:
+            log.debug(f"Could not read config.json for owner_id: {e}")
+    if owner_id and owner_id not in ("YOUR_DISCORD_USER_ID_HERE", "0", ""):
         log.info(f"👑 Bot owner ID: {owner_id}")
     else:
         log.warning("⚠️  OWNER_ID not set — owner-only commands disabled")
+        log.warning("   Set OWNER_ID env var in Railway or update config.json")
 
     async with bot:
         await bot.start(token)

@@ -28,7 +28,7 @@ from typing import Optional
 import discord
 import wavelink
 from discord.ext import commands
-from wavelink import QueueEmpty, TrackEndEvent, TrackStartEvent
+from wavelink import QueueEmpty
 
 from utils import storage, i18n
 
@@ -108,17 +108,19 @@ class Music(commands.Cog, name="Music"):
     # Events
     # ------------------------------------------------------------------
     @commands.Cog.listener()
-    async def on_wavelink_track_start(self, payload: TrackStartEvent) -> None:
-        player = self.players.get(payload.player.guild.id)
-        if player and player.text_channel:
-            try:
+    async def on_wavelink_track_start(self, payload) -> None:
+        """Handle track start event."""
+        try:
+            player = self.players.get(payload.player.guild.id)
+            if player and player.text_channel:
                 embed = self._now_playing_embed(payload.player, payload.track)
                 await player.text_channel.send(embed=embed)
-            except Exception:
-                pass
+        except Exception:
+            pass
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, payload: TrackEndEvent) -> None:
+    async def on_wavelink_track_end(self, payload) -> None:
+        """Handle track end event."""
         player = self.players.get(payload.player.guild.id)
         if not player:
             return

@@ -40,16 +40,47 @@ PRESETS = {
     "rock": [0.10, 0.10, 0.08, 0.05, 0.0, -0.05, -0.10, -0.05, 0.05, 0.10, 0.12, 0.12, 0.10, 0.08, 0.05],
 }
 
-# Lavalink FilterPayload presets (wavelink v3 uses Filters plural)
+# wavelink v3 API: Filters use .set() builder pattern (NOT keyword args)
+# All filter sub-objects are constructed WITHOUT initial kwargs; use their .set() method.
+def _timescale(speed: float = 1.0, pitch: float = 1.0, rate: float = 1.0):
+    """Build a Timescale filter using wavelink v3 builder pattern."""
+    ts = wavelink.Timescale()
+    ts.set(speed=speed, pitch=pitch, rate=rate)
+    return ts
+
+
+def _rotation(hz: float = 0.30):
+    rot = wavelink.Rotation()
+    rot.set(rotation_hz=hz)
+    return rot
+
+
+def _karaoke():
+    k = wavelink.Karaoke()
+    k.set(level=1.0, mono_level=1.0, filter_band=220.0, filter_width=110.0)
+    return k
+
+
+def _tremolo(freq: float = 4.0, depth: float = 0.5):
+    t = wavelink.Tremolo()
+    t.set(frequency=freq, depth=depth)
+    return t
+
+
+def _vibrato(freq: float = 4.0, depth: float = 0.5):
+    v = wavelink.Vibrato()
+    v.set(frequency=freq, depth=depth)
+    return v
+
+
+# Lavalink FilterPayload presets (wavelink v3 builder pattern)
 SPECIAL_FILTERS = {
-    "nightcore": wavelink.Filters(timescale=wavelink.Timescale(speed=1.20, pitch=1.20, rate=1.0)),
-    "vaporwave": wavelink.Filters(timescale=wavelink.Timescale(speed=0.85, pitch=0.85, rate=1.0)),
-    "8d": wavelink.Filters(rotation=wavelink.Rotation(rotation_hz=0.30)),
-    "karaoke": wavelink.Filters(
-        karaoke=wavelink.Karaoke(level=1.0, mono_level=1.0, filter_band=220.0, filter_width=110.0)
-    ),
-    "tremolo": wavelink.Filters(tremolo=wavelink.Tremolo(frequency=4.0, depth=0.5)),
-    "vibrato": wavelink.Filters(vibrato=wavelink.Vibrato(frequency=4.0, depth=0.5, frequency_in_hz=False)),
+    "nightcore": wavelink.Filters(timescale=_timescale(1.20, 1.20, 1.0)),
+    "vaporwave": wavelink.Filters(timescale=_timescale(0.85, 0.85, 1.0)),
+    "8d": wavelink.Filters(rotation=_rotation(0.30)),
+    "karaoke": wavelink.Filters(karaoke=_karaoke()),
+    "tremolo": wavelink.Filters(tremolo=_tremolo(4.0, 0.5)),
+    "vibrato": wavelink.Filters(vibrato=_vibrato(4.0, 0.5)),
 }
 
 
@@ -84,7 +115,13 @@ class Filters(commands.Cog, name="Filters"):
                 await player.set_filter(SPECIAL_FILTERS[name])
                 self.current_filter[ctx.guild.id] = name
             elif name in PRESETS:
-                eq = wavelink.Equalizer(bands=[(i, g) for i, g in enumerate(PRESETS[name])])
+                # wavelink v3 Equalizer uses builder pattern with .set() and .flat()
+                try:
+                    eq = wavelink.Equalizer()
+                    eq.set(bands=[(i, g) for i, g in enumerate(PRESETS[name])])
+                except (AttributeError, TypeError):
+                    # Fallback for older wavelink API
+                    eq = wavelink.Equalizer(bands=[(i, g) for i, g in enumerate(PRESETS[name])])
                 await player.set_filter(wavelink.Filters(equalizer=eq))
                 self.current_filter[ctx.guild.id] = name
             else:
@@ -133,7 +170,7 @@ class Filters(commands.Cog, name="Filters"):
             await ctx.send("❌ Speed range: 0.25 - 3.0")
             return
         player: wavelink.Player = ctx.voice_client
-        await player.set_filter(wavelink.Filters(timescale=wavelink.Timescale(speed=value, pitch=1.0, rate=1.0)))
+        await player.set_filter(wavelink.Filters(timescale=_timescale(speed=value, pitch=1.0, rate=1.0)))
         await ctx.send(f"⚡ Speed: **{value}x**")
 
     @commands.command(name="pitch")
@@ -146,7 +183,7 @@ class Filters(commands.Cog, name="Filters"):
             await ctx.send("❌ Pitch range: 0.25 - 3.0")
             return
         player: wavelink.Player = ctx.voice_client
-        await player.set_filter(wavelink.Filters(timescale=wavelink.Timescale(speed=1.0, pitch=value, rate=1.0)))
+        await player.set_filter(wavelink.Filters(timescale=_timescale(speed=1.0, pitch=value, rate=1.0)))
         await ctx.send(f"🎤 Pitch: **{value}x**")
 
 
