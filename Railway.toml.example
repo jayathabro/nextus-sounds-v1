@@ -1,0 +1,12 @@
+# Railway configuration for self-hosted Lavalink
+# Copy to Railway.toml and customize for your setup
+
+[services.lavalink]
+# Use public wavelinky/wavelink image or build from lavalink/ folder
+dockerImage = "wavelinky/wavelink:latest"
+# OR use local Dockerfile if you have one in lavalink/
+
+[services.bot]
+# Your main bot service
+startCommand = "python bot.py"
+buildCommand = "pip install -r requirements.txt"

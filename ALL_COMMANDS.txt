@@ -1,0 +1,55 @@
+# 🎵 Nextus Sounds v1.0 - All Commands List
+
+## Music Commands 🎵 (!play, !pause, !skip)
+- `!play <query>` - Play a song / add to queue
+- `!pause` - Pause current track
+- `!resume` / `!unpause` - Resume playback
+- `!skip` / `!s` / `!next` - Skip current track
+- `!stop` / `!leave` / `!dc` - Stop and clear queue
+- `!queue` / `!q` - Show queue
+- `!nowplaying` / `!np` / `!current` - Show current track
+- `!volume <0-150>` - Set volume
+- `!loop <off|track|queue>` - Set loop mode
+- `!shuffle` - Shuffle queue
+- `!seek <seconds>` - Jump to position
+- `!remove <pos>` / `!rm` - Remove item from queue
+- `!clearqueue` / `!cq` - Clear queue
+
+## Soundboard Commands 🎺 (!sb)
+- `!sb <name>` - Play a custom sound
+- `!sounds` - List all sounds
+- `!sb add/remove` (Admin) - Add/remove sounds
+
+## Filter Commands 🎚️
+- `!filter <name>` - Apply filter (none, bassboost, nightcore, vaporwave, 8d, karaoke, pop, soft, treblebass, electronic)
+- `!filters` - List all filters
+- `!speed <val>` - Set playback speed
+- `!pitch <val>` - Set playback pitch
+
+## Utility Commands 🛠️
+- `!help` / `!h` - Show all commands
+- `!ping` - Check bot latency
+- `!stats` / `!info` / `!about` - Bot statistics
+- `!lyrics <song>` / `!ly` - Get song lyrics (requires GENIUS_API_KEY)
+- `!search <query>` - Search YouTube
+- `!24/7` / `!247` / `!stay` - Toggle stay-in-VC mode
+- `!invite` - Get bot invite link
+
+## Moderation Commands 🛡️ (Admin only)
+- `!djrole <@role>` - Set DJ role (Admin)
+- `!djinfo` - Show DJ role info
+- `!vote-skip` / `!voteskip` / `!vs` - Vote to skip track
+
+## Welcome Commands 🎉
+- `!welcome` - Toggle welcome sound
+- `!welcomesound` - Set welcome sound file
+
+## Owner Commands (Bot Owner only)
+- (Check cogs/owner.py for owner-only commands)
+
+## Slash Commands (/ prefix)
+- /play, /pause, /skip, /queue, /nowplaying, /volume, /loop, /filter, etc.
+  (Auto-synced from prefix commands)
+
+## Text Prefixes Supported
+- `!` , `ns.` , `n.` , or @mention the bot

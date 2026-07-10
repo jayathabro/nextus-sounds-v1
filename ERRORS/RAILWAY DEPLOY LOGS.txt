@@ -1,56 +1,50 @@
-Starting Container
-2026-07-10 11:52:43,403 | INFO | NextusSounds | 👑 Bot owner ID: 1209693276635009095
-2026-07-10 11:52:43,403 | INFO | discord.client | logging in using static token
-2026-07-10 11:52:43,792 | INFO | NextusSounds | Setting up Nextus Sounds...
-2026-07-10 11:52:43,801 | INFO | NextusSounds | Loaded cog: cogs.music
-2026-07-10 11:52:43,803 | INFO | NextusSounds | Loaded cog: cogs.filters
-2026-07-10 11:52:43,805 | INFO | Soundboard | Loaded 0 sounds: []
-2026-07-10 11:52:43,806 | INFO | NextusSounds | Loaded cog: cogs.soundboard
-2026-07-10 11:52:43,807 | INFO | NextusSounds | Loaded cog: cogs.welcome
-2026-07-10 11:52:43,815 | INFO | NextusSounds | Loaded cog: cogs.utilities
-2026-07-10 11:52:43,817 | INFO | NextusSounds | Loaded cog: cogs.events
-2026-07-10 11:52:43,820 | INFO | NextusSounds | Loaded cog: cogs.extras
-2026-07-10 11:52:43,821 | INFO | NextusSounds | Loaded cog: cogs.moderation
-2026-07-10 11:52:43,822 | INFO | NextusSounds | Loaded cog: cogs.controls
-2026-07-10 11:53:17,467 | INFO | wavelink.websocket | Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "7.177210000998" seconds.
-2026-07-10 11:53:16,819 | INFO | Slash | Synced 7 slash commands
-2026-07-10 11:53:16,819 | INFO | NextusSounds | Loaded cog: cogs.slash
-2026-07-10 11:53:16,822 | INFO | NextusSounds | Loaded cog: cogs.owner
-2026-07-10 11:53:16,822 | INFO | NextusSounds | 🔄 Trying Lavalink node: MAIN (https://lavalink.jockie.dev:443)
-2026-07-10 11:53:17,238 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.jockie.dev:443 ssl:default [[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1032)]"
+tarting Container
+2026-07-10 12:07:02,965 | INFO | NextusSounds | Loaded cog: cogs.controls
+2026-07-10 12:07:03,160 | INFO | Slash | Synced 7 slash commands
+2026-07-10 12:07:03,160 | INFO | NextusSounds | Loaded cog: cogs.slash
+2026-07-10 12:07:02,568 | INFO | NextusSounds | 👑 Bot owner ID: 1209693276635009095
+2026-07-10 12:07:02,568 | INFO | discord.client | logging in using static token
+2026-07-10 12:07:02,930 | INFO | NextusSounds | Setting up Nextus Sounds...
+2026-07-10 12:07:02,941 | INFO | NextusSounds | Loaded cog: cogs.music
+2026-07-10 12:07:02,943 | INFO | NextusSounds | Loaded cog: cogs.filters
+2026-07-10 12:07:02,946 | INFO | Soundboard | Loaded 0 sounds: []
+2026-07-10 12:07:02,946 | INFO | NextusSounds | Loaded cog: cogs.soundboard
+2026-07-10 12:07:02,947 | INFO | NextusSounds | Loaded cog: cogs.welcome
+2026-07-10 12:07:02,958 | INFO | NextusSounds | Loaded cog: cogs.utilities
+2026-07-10 12:07:02,959 | INFO | NextusSounds | Loaded cog: cogs.events
+2026-07-10 12:07:02,962 | INFO | NextusSounds | Loaded cog: cogs.extras
+2026-07-10 12:07:02,963 | INFO | NextusSounds | Loaded cog: cogs.moderation
+2026-07-10 12:07:03,164 | INFO | NextusSounds | Loaded cog: cogs.owner
+2026-07-10 12:07:03,164 | INFO | NextusSounds | 🔄 Trying Lavalink node: MAIN (https://lavalink.jockie.dev:443)
+2026-07-10 12:07:04,329 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.jockie.dev:443 ssl:default [[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1032)]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:17,238 | INFO | wavelink.websocket | Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "0.11097586099805845" seconds.
-2026-07-10 11:53:17,467 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.jockie.dev:443 ssl:default [[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1032)]"
+2026-07-10 12:07:04,329 | INFO | wavelink.websocket | Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "1.1928833073231873" seconds.
+2026-07-10 12:07:05,844 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.jockie.dev:443 ssl:default [[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1032)]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:21,826 | WARNING | NextusSounds | ⏰ Timeout connecting to MAIN
-2026-07-10 11:53:21,826 | INFO | NextusSounds | 🔄 Trying Lavalink node: JOCKIE_HTTP (http://lavalink.jockie.dev:2333)
-2026-07-10 11:53:26,829 | WARNING | NextusSounds | ⏰ Timeout connecting to JOCKIE_HTTP
-2026-07-10 11:53:26,829 | INFO | NextusSounds | 🔄 Trying Lavalink node: DARREN (https://lavalink.darrenofficial.com:443)
-2026-07-10 11:53:26,893 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.darrenofficial.com:443 ssl:default [No address associated with hostname]"
+2026-07-10 12:07:05,844 | INFO | wavelink.websocket | Node(identifier=MAIN, uri=https://lavalink.jockie.dev:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "3.0553094650192216" seconds.
+2026-07-10 12:07:08,166 | WARNING | NextusSounds | ⏰ Timeout connecting to MAIN
+2026-07-10 12:07:08,167 | INFO | NextusSounds | 🔄 Trying Lavalink node: JOCKIE_HTTP (http://lavalink.jockie.dev:2333)
+2026-07-10 12:07:13,168 | WARNING | NextusSounds | ⏰ Timeout connecting to JOCKIE_HTTP
+2026-07-10 12:07:13,168 | INFO | NextusSounds | 🔄 Trying Lavalink node: DARREN (https://lavalink.darrenofficial.com:443)
+2026-07-10 12:07:13,238 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.darrenofficial.com:443 ssl:default [No address associated with hostname]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:26,893 | INFO | wavelink.websocket | Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "1.4752419353834658" seconds.
-2026-07-10 11:53:28,372 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.darrenofficial.com:443 ssl:default [No address associated with hostname]"
+2026-07-10 12:07:13,238 | INFO | wavelink.websocket | Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "0.8895176819488204" seconds.
+2026-07-10 12:07:14,130 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.darrenofficial.com:443 ssl:default [No address associated with hostname]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:28,372 | INFO | wavelink.websocket | Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "2.9504838707669316" seconds.
-2026-07-10 11:53:31,376 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.darrenofficial.com:443 ssl:default [No address associated with hostname]"
+2026-07-10 12:07:14,131 | INFO | wavelink.websocket | Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "5.465240542073773" seconds.
+2026-07-10 12:07:18,170 | WARNING | NextusSounds | ⏰ Timeout connecting to DARREN
+2026-07-10 12:07:18,170 | INFO | NextusSounds | 🔄 Trying Lavalink node: OOPS (http://lavalink.oops.wtf:2333)
+2026-07-10 12:07:18,245 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.oops.wtf:2333 ssl:default [Name or service not known]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:31,376 | INFO | wavelink.websocket | Node(identifier=DARREN, uri=https://lavalink.darrenofficial.com:443, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "5.900967741533863" seconds.
-2026-07-10 11:53:31,830 | WARNING | NextusSounds | ⏰ Timeout connecting to DARREN
-2026-07-10 11:53:31,830 | INFO | NextusSounds | 🔄 Trying Lavalink node: OOPS (http://lavalink.oops.wtf:2333)
-2026-07-10 11:53:31,891 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.oops.wtf:2333 ssl:default [Name or service not known]"
+2026-07-10 12:07:18,245 | INFO | wavelink.websocket | Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "0.30588784881298614" seconds.
+2026-07-10 12:07:18,553 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.oops.wtf:2333 ssl:default [Name or service not known]"
 If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:31,892 | INFO | wavelink.websocket | Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "0.17702193629146135" seconds.
-2026-07-10 11:53:32,071 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.oops.wtf:2333 ssl:default [Name or service not known]"
-If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:32,072 | INFO | wavelink.websocket | Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "3.8514750184228888" seconds.
-2026-07-10 11:53:35,977 | WARNING | wavelink.websocket | An unexpected error occurred while connecting Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) to Lavalink: "Cannot connect to host lavalink.oops.wtf:2333 ssl:default [Name or service not known]"
-If this error persists or wavelink is unable to reconnect, please see: https://github.com/PythonistaGuild/Wavelink/issues
-2026-07-10 11:53:35,977 | INFO | wavelink.websocket | Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "7.7029500368457775" seconds.
-2026-07-10 11:53:36,831 | WARNING | NextusSounds | ⏰ Timeout connecting to OOPS
-2026-07-10 11:53:36,831 | ERROR | NextusSounds | ❌ All Lavalink nodes failed. Bot will use fallback FFmpeg mode.
-2026-07-10 11:53:37,331 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: d779b7c3a771033ce3b321857c311af5).
-2026-07-10 11:53:39,342 | INFO | Events | ──────────────────────────────────────────────────
-2026-07-10 11:53:39,342 | INFO | Controls | ✅ Controls persistent view registered
-2026-07-10 11:53:39,341 | INFO | Events | ✅ Logged in as Nextus Sounds v.1#3492 (ID: 1524912958537470114)
-2026-07-10 11:53:39,341 | INFO | Events | 📡 Connected to 1 guilds
-2026-07-10 11:53:39,341 | INFO | Events | 🐍 Python 3.13.14 | discord.py 2.7.1
+2026-07-10 12:07:18,553 | INFO | wavelink.websocket | Node(identifier=OOPS, uri=http://lavalink.oops.wtf:2333, status=NodeStatus.CONNECTING, players=0) retrying websocket connection in "6.294198004783989" seconds.
+2026-07-10 12:07:23,175 | WARNING | NextusSounds | ⏰ Timeout connecting to OOPS
+2026-07-10 12:07:23,175 | ERROR | NextusSounds | ❌ All Lavalink nodes failed. Bot will use fallback FFmpeg mode.
+2026-07-10 12:07:23,485 | INFO | discord.gateway | Shard ID None has connected to Gateway (Session ID: 573c3c12b3320d9479cf09aa5aa75c2a).
+2026-07-10 12:07:25,495 | INFO | Events | 🐍 Python 3.13.14 | discord.py 2.7.1
+2026-07-10 12:07:25,495 | INFO | Events | ──────────────────────────────────────────────────
+2026-07-10 12:07:25,495 | INFO | Controls | ✅ Controls persistent view registered
+2026-07-10 12:07:25,495 | INFO | Events | ✅ Logged in as Nextus Sounds v.1#3492 (ID: 1524912958537470114)
+2026-07-10 12:07:25,495 | INFO | Events | 📡 Connected to 1 guilds
