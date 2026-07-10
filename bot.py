@@ -116,7 +116,7 @@ class NextusSounds(commands.Bot):
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
         password = os.getenv("LAVALINK_PASSWORD", "password")
 
-        # Nodes to try in order — wavelink v3 uses URI scheme for SSL
+        # 🔧 FIX: Nodes with proper config
         nodes_to_try = [
             {
                 "uri": f"{'https' if secure else 'http'}://{host}:{port}",
@@ -133,18 +133,30 @@ class NextusSounds(commands.Bot):
                 "password": "darrenoff",
                 "identifier": "DARREN",
             },
+            {
+                "uri": "http://lavalink.oops.wtf:2333",
+                "password": "oops",
+                "identifier": "OOPS",
+            },
         ]
 
         for node_cfg in nodes_to_try:
             try:
-                # 🔧 FIX: No 'https' parameter — wavelink v3 uses URI scheme
+                log.info(f"🔄 Trying Lavalink node: {node_cfg['identifier']} ({node_cfg['uri']})")
+                # 🔧 FIX: Timeout — if node doesn't connect in 5s, move to next
                 node = wavelink.Node(**node_cfg)
-                await wavelink.Pool.connect(client=self, nodes=[node])
+                await asyncio.wait_for(
+                    wavelink.Pool.connect(client=self, nodes=[node]),
+                    timeout=5.0
+                )
                 log.info(f"✅ Lavalink connection established: {node_cfg['identifier']}")
                 return
+            except asyncio.TimeoutError:
+                log.warning(f"⏰ Timeout connecting to {node_cfg['identifier']}")
             except Exception as e:
                 log.warning(f"⚠️ Failed to connect {node_cfg['identifier']}: {e}")
-                continue
+            # Continue to next node
+            continue
 
         log.error("❌ All Lavalink nodes failed. Bot will use fallback FFmpeg mode.")
 
