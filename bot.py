@@ -116,37 +116,29 @@ class NextusSounds(commands.Bot):
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
         password = os.getenv("LAVALINK_PASSWORD", "password")
 
-        # Nodes to try in order — with explicit https parameter for wavelink v3
+        # Nodes to try in order — wavelink v3 uses URI scheme for SSL
         nodes_to_try = [
             {
                 "uri": f"{'https' if secure else 'http'}://{host}:{port}",
                 "password": password,
                 "identifier": "MAIN",
-                "https": secure,  # ← Explicit HTTPS flag
             },
             {
                 "uri": "http://lavalink.jockie.dev:2333",
                 "password": "youshallnotpass",
                 "identifier": "JOCKIE_HTTP",
-                "https": False,  # ← HTTP, no SSL
             },
             {
                 "uri": "https://lavalink.darrenofficial.com:443",
                 "password": "darrenoff",
                 "identifier": "DARREN",
-                "https": True,  # ← HTTPS
             },
         ]
 
         for node_cfg in nodes_to_try:
             try:
-                # 🔧 FIX: Explicit Node() with all parameters (wavelink v3)
-                node = wavelink.Node(
-                    uri=node_cfg["uri"],
-                    password=node_cfg["password"],
-                    identifier=node_cfg["identifier"],
-                    https=node_cfg["https"],  # ← Critical fix
-                )
+                # 🔧 FIX: No 'https' parameter — wavelink v3 uses URI scheme
+                node = wavelink.Node(**node_cfg)
                 await wavelink.Pool.connect(client=self, nodes=[node])
                 log.info(f"✅ Lavalink connection established: {node_cfg['identifier']}")
                 return

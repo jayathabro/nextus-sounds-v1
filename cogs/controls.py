@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 from typing import Optional
 
 import discord
@@ -22,15 +23,10 @@ log = logging.getLogger("Controls")
 class MusicControlView(discord.ui.View):
     """Persistent view with play/pause/skip/stop/loop/shuffle buttons."""
 
-    def __init__(self, cog: "Controls", timeout: Optional[float] = 600) -> None:
-        super().__init__(timeout=timeout)
+    def __init__(self, cog: "Controls") -> None:
+        # 🔧 FIX: timeout=None makes view persistent across restarts
+        super().__init__(timeout=None)
         self.cog = cog
-
-    async def _author_required(self, interaction: discord.Interaction) -> bool:
-        # Allow DJ-role users too — simplified: only author can use
-        # In production, expand to DJ role check via cog.
-        # We don't enforce here to keep the view stateful.
-        return True
 
     @discord.ui.button(emoji="⏯", style=discord.ButtonStyle.primary, custom_id="ctrl:pause")
     async def pause(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
@@ -68,7 +64,6 @@ class MusicControlView(discord.ui.View):
             player = music.get_player(interaction.guild.id)
             if not player.queue:
                 return await interaction.response.send_message("📭 Queue empty!", ephemeral=True)
-            import random
             random.shuffle(player.queue)
         await interaction.response.defer()
 
@@ -108,8 +103,12 @@ class Controls(commands.Cog, name="Controls"):
 
     @commands.Cog.listener()
     async def on_ready(self) -> None:
-        # Persistent view for buttons across restarts (custom_id is required)
-        self.bot.add_view(MusicControlView(self))
+        """Add persistent view when bot is ready."""
+        # 🔧 FIX: View is now persistent (timeout=None + custom_id on all buttons)
+        view = MusicControlView(self)
+        # Store view in bot's persistent view registry
+        self.bot.add_view(view)
+        log.info("✅ Controls persistent view registered")
 
     @commands.Cog.listener()
     async def on_wavelink_track_start(self, payload) -> None:
