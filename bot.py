@@ -74,6 +74,10 @@ class NextusSounds(commands.Bot):
         }
         self.welcome_sound_enabled = os.getenv("ENABLE_WELCOME_SOUND", "true").lower() == "true"
         self.start_time = discord.utils.utcnow()
+        # Lavalink state — set by connect_lavalink(). Initialized here so the
+        # rest of the bot can safely read them even before setup_hook runs.
+        self.lavalink_connected = False
+        self.ffmpeg_fallback = False
 
     # ------------------------------------------------------------------
     async def setup_hook(self) -> None:
@@ -105,70 +109,129 @@ class NextusSounds(commands.Bot):
                 log.exception(f"Failed to load cog {cog}: {e}")
 
     async def connect_lavalink(self) -> None:
-        """Connect to Lavalink with fallback to multiple public nodes."""
-        # Use a working public node as primary instead of jockie.dev (which is dead)
-        host = os.getenv("LAVALINK_HOST", "lavalink.dependabot.com")
+        """Connect to Lavalink, trying multiple public nodes in order.
+
+        In wavelink v3, ``Pool.connect()`` returns as soon as the node objects
+        are registered — the websocket handshake completes asynchronously
+        afterwards. So we cannot trust it returning to mean "connected". After
+        registering each node we poll ``node.status`` until it reaches
+        CONNECTED, and only then consider the node usable. If every node fails
+        (DNS / TLS / handshake / bad password), we DO NOT crash — we flip on
+        FFmpeg fallback mode so direct-URL playback still works.
+        """
+        # Primary node from env (overridable per-deploy via Railway variables).
+        host = os.getenv("LAVALINK_HOST", "lavalink.lavalink.xyz")
         port = os.getenv("LAVALINK_PORT", "443")
         secure = os.getenv("LAVALINK_SECURE", "true").lower() == "true"
         password = os.getenv("LAVALINK_PASSWORD", "youshallnotpass")
+        scheme = "https" if secure else "http"
 
-        # WORKING: Reliable public nodes (ordered by reliability)
+        # Env-configured node first, then known public fallbacks. Duplicates of
+        # the env node are filtered out below so we never dial the same URI twice.
         nodes_to_try = [
             {
-                "uri": f"{'https' if secure else 'http'}://{host}:{port}",
+                "uri": f"{scheme}://{host}:{port}",
                 "password": password,
-                "identifier": "MAIN",
-            },
-            # Top reliable public nodes
-            {
-                "uri": "https://lava.rest:443",
-                "password": "lava",
-                "identifier": "LAVA_REST",
+                "identifier": "ENV",
             },
             {
-                "uri": "https://api.lavalink.link:443",
-                "password": "link",
-                "identifier": "LAVALINK_LINK",
+                "uri": "https://lavalink.lavalink.xyz:443",
+                "password": "youshallnotpass",
+                "identifier": "LAVALINK_XYZ",
             },
             {
-                "uri": "https://lavalink.vision:443",
-                "password": "vision",
-                "identifier": "VISION",
+                "uri": "https://lavalink.publicnode.com:443",
+                "password": "public",
+                "identifier": "PUBLIC_NODE",
             },
             {
-                "uri": "https://lavalink.neko.bot:443",
-                "password": "neko",
-                "identifier": "NEKO",
-            },
-            {
-                "uri": "https://lavalink.oryzen.xyz:443",
-                "password": "oryzen",
-                "identifier": "ORYZEN",
+                "uri": "https://lavalink.weiss.ovh:443",
+                "password": "weiss",
+                "identifier": "WEISS",
             },
         ]
 
+        # De-duplicate by URI, preserving order (env node keeps priority).
+        seen_uris: set[str] = set()
+        unique_nodes = []
+        for cfg in nodes_to_try:
+            if cfg["uri"] in seen_uris:
+                continue
+            seen_uris.add(cfg["uri"])
+            unique_nodes.append(cfg)
+
         self.lavalink_connected = False
-        for node_cfg in nodes_to_try:
+        self.ffmpeg_fallback = False
+        last_error = "unknown"
+
+        for node_cfg in unique_nodes:
+            identifier = node_cfg["identifier"]
+            uri = node_cfg["uri"]
             try:
-                log.info(f"🔄 Trying Lavalink node: {node_cfg['identifier']} ({node_cfg['uri']})")
-                node = wavelink.Node(**node_cfg)
-                await asyncio.wait_for(
-                    wavelink.Pool.connect(client=self, nodes=[node]),
-                    timeout=8.0
+                log.info(f"🔄 Trying Lavalink node: {identifier} ({uri})")
+                node = wavelink.Node(
+                    uri=uri,
+                    password=node_cfg["password"],
+                    identifier=identifier,
                 )
-                self.lavalink_connected = True
-                log.info(f"✅ Lavalink connection established: {node_cfg['identifier']}")
-                return
-            except asyncio.TimeoutError:
-                log.warning(f"⏰ Timeout connecting to {node_cfg['identifier']}")
+                # Registers the node; websocket connects in the background.
+                await wavelink.Pool.connect(client=self, nodes=[node])
+
+                # Poll until the node's websocket is actually CONNECTED.
+                if await self._await_node_connected(node, timeout=10.0):
+                    self.lavalink_connected = True
+                    log.info(f"✅ Lavalink connection established: {identifier}")
+                    return
+
+                last_error = "handshake did not complete (bad host/password/TLS?)"
+                log.warning(f"⚠️ Node {identifier} registered but never became ready.")
+                # Drop the dead node so a later working one becomes node[0].
+                await self._discard_node(node)
             except Exception as e:
-                log.warning(f"⚠️ Failed to connect {node_cfg['identifier']}: {e}")
+                last_error = f"{type(e).__name__}: {e}"
+                log.warning(f"⚠️ Failed to connect {identifier}: {last_error}")
             continue
 
-        # ⚠️ CRITICAL: If no node connects, DON'T start the bot
-        log.critical("❌ All Lavalink nodes failed. Cannot start music bot without audio.")
+        # ⚠️ CRITICAL: never crash. Fall back to FFmpeg direct-URL playback.
+        log.warning(
+            f"❌ All Lavalink nodes failed (last error: {last_error}). "
+            f"Enabling FFmpeg fallback mode (direct-URL playback only)."
+        )
         self.lavalink_connected = False
-        raise RuntimeError("No working Lavalink node available - check network/firewall or add custom node")
+        self.ffmpeg_fallback = True
+
+    @staticmethod
+    async def _await_node_connected(node: "wavelink.Node", timeout: float = 10.0) -> bool:
+        """Poll a node until its status is CONNECTED, or timeout. Returns success."""
+        deadline = timeout
+        step = 0.25
+        while deadline > 0:
+            status = getattr(node, "status", None)
+            status_name = getattr(status, "name", str(status)).upper() if status is not None else ""
+            if "CONNECTED" in status_name and "DISCONNECT" not in status_name:
+                return True
+            # Some wavelink builds expose a boolean-ish readiness instead.
+            if getattr(node, "connected", False) is True:
+                return True
+            await asyncio.sleep(step)
+            deadline -= step
+        return False
+
+    @staticmethod
+    async def _discard_node(node: "wavelink.Node") -> None:
+        """Best-effort removal of a dead node from the pool so it isn't reused."""
+        try:
+            await node.close()
+        except Exception:
+            pass
+        try:
+            # Pool.nodes is a dict keyed by identifier in wavelink v3.
+            nodes = getattr(wavelink.Pool, "nodes", {})
+            ident = getattr(node, "identifier", None)
+            if isinstance(nodes, dict) and ident in nodes:
+                del nodes[ident]
+        except Exception:
+            pass
 
     @tasks.loop(minutes=5)
     async def change_status(self) -> None:

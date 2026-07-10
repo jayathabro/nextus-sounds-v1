@@ -150,23 +150,56 @@ class Music(commands.Cog, name="Music"):
         return []
 
     async def ensure_voice(self, ctx: commands.Context) -> Optional[wavelink.Player]:
-        # 🔧 Check if Lavalink pool has connected nodes
-        try:
-            pool = wavelink.Pool
-            nodes = list(pool.nodes) if hasattr(pool, 'nodes') else []
-            if not nodes:
-                await ctx.send("❌ Voice එකට connect වෙන්න බෑ: No nodes are currently assigned to the wavelink.Pool in a CONNECTED state.\n💡 Check bot logs - Lavalink may be unreachable!")
-                return None
-        except Exception:
-            pass  # If check fails, proceed and let the actual error happen
+        # 🔧 Trust the authoritative flags set by bot.connect_lavalink(). The
+        # Lavalink Pool can hold dead-but-registered nodes, so counting
+        # Pool.nodes is unreliable — bot.lavalink_connected is the source of truth.
+        lavalink_ok = getattr(self.bot, "lavalink_connected", False)
+        ffmpeg_fallback = getattr(self.bot, "ffmpeg_fallback", False)
+
+        # Belt-and-braces: if the flag is unset but a node genuinely reports
+        # connected, treat Lavalink as usable.
+        if not lavalink_ok and not ffmpeg_fallback:
+            try:
+                nodes = getattr(wavelink.Pool, "nodes", {})
+                node_iter = nodes.values() if isinstance(nodes, dict) else list(nodes)
+                for n in node_iter:
+                    status = getattr(getattr(n, "status", None), "name", "").upper()
+                    if "CONNECTED" in status and "DISCONNECT" not in status:
+                        lavalink_ok = True
+                        break
+            except Exception:
+                pass
+
+        if not lavalink_ok and not ffmpeg_fallback:
+            await ctx.send(
+                "❌ Voice එකට connect වෙන්න බෑ: Lavalink nodes unavailable.\n"
+                "💡 Check bot logs — Lavalink may be unreachable!"
+            )
+            return None
 
         if not ctx.author.voice or not ctx.author.voice.channel:
             await ctx.send("❌ Voice channel එකක join වෙන්න ඕනේ!")
             return None
+
+        # Reuse an existing voice client only if its type matches the current
+        # mode. A leftover plain VoiceClient in Lavalink mode (or a wavelink
+        # Player in FFmpeg mode) would break playback, so reconnect fresh.
         if ctx.voice_client:
-            return ctx.voice_client
+            is_wavelink = isinstance(ctx.voice_client, wavelink.Player)
+            if lavalink_ok == is_wavelink:
+                return ctx.voice_client
+            try:
+                await ctx.voice_client.disconnect(force=True)
+            except Exception:
+                pass
+
         try:
-            player = await ctx.author.voice.channel.connect(cls=wavelink.Player, self_deaf=True)
+            if lavalink_ok:
+                # Lavalink mode
+                player = await ctx.author.voice.channel.connect(cls=wavelink.Player, self_deaf=True)
+            else:
+                # FFmpeg fallback mode — discord.py's built-in voice client
+                player = await ctx.author.voice.channel.connect(self_deaf=True)
             return player
         except Exception as e:
             await ctx.send(f"❌ Voice එකට connect වෙන්න බෑ: {e}")
@@ -270,6 +303,13 @@ class Music(commands.Cog, name="Music"):
         player = self.get_player(ctx.guild.id)
         player.text_channel = ctx.channel
 
+        # Check for FFmpeg fallback mode
+        ffmpeg_fallback = getattr(self.bot, 'ffmpeg_fallback', False)
+
+        # Handle FFmpeg fallback mode
+        if ffmpeg_fallback:
+            return await self._play_ffmpeg_fallback(ctx, query, voice, player)
+
         if not voice.is_playing():
             # wavelink v3: is_paused is a property, not directly settable
             # The proper way to resume is voice.resume(); check first
@@ -344,6 +384,51 @@ class Music(commands.Cog, name="Music"):
             player.last_track = track
             if embed_added:
                 await msg.edit(content=embed_added)
+
+    async def _play_ffmpeg_fallback(self, ctx: commands.Context, query: str, voice, player) -> None:
+        """FFmpeg fallback: play direct URLs when Lavalink is unavailable."""
+        import subprocess
+
+        # Check if query is a direct URL
+        if not re.match(URL_REGEX, query):
+            await ctx.send("❌ FFmpeg fallback mode: Only direct URLs supported (e.g., `!play https://youtube.com/watch?v=...`)")
+            await voice.disconnect()
+            return
+
+        # Send loading message
+        embed_loading = discord.Embed(
+            description=f"🔊 Playing via FFmpeg fallback: **{query}**",
+            color=0xFAA61A,
+        )
+        msg = await ctx.send(embed=embed_loading)
+
+        try:
+            # Check if FFmpeg is available
+            try:
+                subprocess.run(["ffmpeg", "-version"], capture_output=True, check=True)
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                await msg.edit(content="❌ FFmpeg fallback: FFmpeg not installed on this system.\n"
+                                      f"Please add a working Lavalink node to your .env file:\n"
+                                      f"`LAVALINK_HOST=lavalink.publicnode.com`\n"
+                                      f"`LAVALINK_PASSWORD=public`")
+                await voice.disconnect()
+                return
+
+            # Extract audio with FFmpeg and play via discord.py
+            FFMPEG_OPTIONS = {
+                'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_ms 5000',
+                'options': '-vn -filter:a "bass=g=5" -ar 48000 -ac 2'
+            }
+
+            audio_source = discord.FFmpegPCMAudio(query, **FFMPEG_OPTIONS)
+            voice.play(audio_source)
+
+            await msg.edit(content=f"✅ Now playing (FFmpeg): `{query}`")
+
+        except Exception as e:
+            await msg.edit(content=f"❌ FFmpeg fallback failed: `{e}`\n"
+                              f"Try a different URL or check console logs.")
+            await voice.disconnect()
 
     async def _has_current_track(self, voice: wavelink.Player) -> bool:
         return voice.current is not None
